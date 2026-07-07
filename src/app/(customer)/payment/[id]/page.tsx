@@ -4,14 +4,12 @@ import { notFound } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 
 export default async function PaymentPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const orderId = parseInt(id, 10);
-  
-  if (isNaN(orderId)) notFound();
+  const { id } = await params; // public order ID
+  if (!id) notFound();
 
   const [rows] = await pool.execute<RowDataPacket[]>(
-    "SELECT * FROM orders WHERE id = ?",
-    [orderId]
+    "SELECT * FROM orders WHERE public_order_id = ?",
+    [id]
   );
 
   if (rows.length === 0) notFound();
@@ -20,9 +18,9 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
   const PRICE_PER_PACK = 470;
   const totalAmount = order.quantity * PRICE_PER_PACK;
 
-  // Swish format: C1234285045;{totalAmount};Order-{orderId};0
+  // Swish format: C1234285045;{totalAmount};{order.public_order_id};0
   const swishNumber = "1234285045"; // Mock swish number
-  const swishString = `C${swishNumber};${totalAmount};Order-${orderId};0`;
+  const swishString = `C${swishNumber};${totalAmount};${order.public_order_id};0`;
 
   return (
     <main className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-6 text-neutral-900">
@@ -31,7 +29,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
         <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
         
         <h1 className="text-3xl font-bold text-emerald-950 mb-2">Complete Payment</h1>
-        <p className="text-neutral-500 font-medium mb-8">Order #{orderId}</p>
+        <p className="text-neutral-500 font-medium mb-8">Order #{order.public_order_id}</p>
 
         <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 mb-8 w-full">
           <p className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2">Total Amount</p>

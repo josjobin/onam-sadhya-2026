@@ -16,10 +16,118 @@ export default function TermsPage() {
           <div className="w-24 h-1 bg-emerald-500 mx-auto rounded-full mt-6"></div>
         </div>
 
-        {/* Section 1: Right of Withdrawal */}
+        {/* Product Overview & Contents */}
+        <section className="bg-white rounded-3xl shadow-lg shadow-emerald-900/5 border border-neutral-100 overflow-hidden">
+          <div className="bg-emerald-900 px-8 py-6">
+            <h3 className="text-2xl font-bold text-white">Product Description & Specifications</h3>
+            <p className="text-emerald-100 mt-1">Produktbeskrivning och specifikationer</p>
+          </div>
+          
+          <div className="p-8 md:p-10 space-y-8">
+            <div className="prose prose-emerald max-w-none">
+              <p className="text-lg leading-relaxed text-neutral-700">
+                <strong className="text-emerald-900 font-bold">Flavournest Onam Sadhya 2026</strong> is a frozen pack of a full-course Vegetarian Traditional Kerala Meal, served exclusively on the occasion of <a href="https://en.wikipedia.org/wiki/Onam" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-800 underline font-semibold">Onam</a>.
+              </p>
+            </div>
+
+            {/* Physical Specs */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-neutral-50 rounded-2xl p-5 border border-neutral-100">
+                <span className="block text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">Weight / Vikt</span>
+                <span className="block text-xl font-bold text-neutral-800">5.345 kg</span>
+                <span className="block text-sm text-neutral-500 mt-1">*Rice is not included / Ris ingår ej</span>
+              </div>
+              <div className="bg-neutral-50 rounded-2xl p-5 border border-neutral-100">
+                <span className="block text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">Dimensions / Mått</span>
+                <span className="block text-xl font-bold text-neutral-800">43.5 × 28.5 × 14 cm</span>
+              </div>
+              <div className="bg-neutral-50 rounded-2xl p-5 border border-neutral-100">
+                <span className="block text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">Portions / Portioner</span>
+                <span className="block text-xl font-bold text-neutral-800">5 Servings</span>
+                <span className="block text-sm text-neutral-500 mt-1">As per manufacturer</span>
+              </div>
+            </div>
+
+            {/* Contents List */}
+            <div>
+              <h4 className="text-sm font-bold tracking-widest text-emerald-900 uppercase mb-4 border-b pb-2">Pack Contents / Förpackningens Innehåll</h4>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm text-neutral-700">
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Salt</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Sharkkara Varatty</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Banana Chips</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Lemon Pickle</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Mango Pickle</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Avial</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Puli Inchi</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Pineapple Pachadi</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Olan</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Koottu Curry</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Erissery</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Achinga Thoran</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Angamaly Mango Curry</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Sambar</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Parippu Curry</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Pappadam</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Rasam</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Ada Pradhaman</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Parippu Payasam</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Kondattam</span></li>
+                <li className="flex items-center space-x-2"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span><span>Banana Leaf (from SAS)</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 1: Fulfillment Guarantee */}
         <section className="bg-white rounded-3xl shadow-lg shadow-emerald-900/5 border border-neutral-100 p-8 md:p-10">
           <h3 className="text-2xl font-bold text-emerald-900 mb-6 border-b border-neutral-100 pb-4">
-            1. Right of Withdrawal Exemption / Undantag från ångerrätt
+            1. Order Fulfillment & Storage Limits / Orderuppfyllelse och lagringsgränser
+          </h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-sm font-bold tracking-widest text-emerald-600 uppercase mb-2">English</h4>
+              <p className="text-neutral-700 leading-relaxed">
+                Making a payment does not guarantee the delivery of your order. Fulfillment is strictly dependent on the availability of free freezer space to safely store the frozen food upon its arrival in Sweden. If we are unable to fulfill your order due to logistical or storage constraints, your order will be cancelled, and we will refund the full amount paid.
+              </p>
+            </div>
+            <div className="pl-4 border-l-4 border-neutral-200 bg-neutral-50 p-4 rounded-r-xl">
+              <h4 className="text-sm font-bold tracking-widest text-neutral-500 uppercase mb-2">Svenska</h4>
+              <p className="text-neutral-600 leading-relaxed italic">
+                En genomförd betalning garanterar inte leverans av din beställning. Fullgörandet av beställningen är strikt beroende av tillgången på ledigt frysutrymme för att säkert lagra den frysta maten vid ankomsten till Sverige. Om vi inte kan leverera din beställning på grund av logistik- eller utrymmesbrist kommer din beställning att avbrytas och vi återbetalar hela det inbetalda beloppet.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 2: Delivery & Collection */}
+        <section className="bg-white rounded-3xl shadow-lg shadow-emerald-900/5 border border-neutral-100 p-8 md:p-10">
+          <h3 className="text-2xl font-bold text-emerald-900 mb-6 border-b border-neutral-100 pb-4">
+            2. Delivery & Collection / Leverans och upphämtning
+          </h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-sm font-bold tracking-widest text-emerald-600 uppercase mb-2">English</h4>
+              <p className="text-neutral-700 leading-relaxed">
+                Home Delivery is available only in Gothenburg by default. For all other cities, customers must collect their orders at the designated location and time slot. However, if we receive a sufficient volume of orders for other specific cities, we may consider organizing home delivery (with or without additional delivery charges). 
+                <br /><br />
+                We operate a strict one-time delivery/collection window. Because the items are frozen, we do not have the facilities to store melting food or attempt a second delivery. Failure to collect or receive your order during your agreed window transfers all liability to you, resulting in immediate forfeiture of the goods without any right to a refund.
+              </p>
+            </div>
+            <div className="pl-4 border-l-4 border-neutral-200 bg-neutral-50 p-4 rounded-r-xl">
+              <h4 className="text-sm font-bold tracking-widest text-neutral-500 uppercase mb-2">Svenska</h4>
+              <p className="text-neutral-600 leading-relaxed italic">
+                Hemleverans erbjuds som standard endast i Göteborg. För alla övriga städer måste kunderna hämta sina beställningar på angiven plats och tid. Om vi får in en tillräcklig mängd beställningar för specifika andra städer kan vi dock överväga att organisera hemleverans (med eller utan extra leveransavgifter).
+                <br /><br />
+                Vi tillämpar ett strikt fönster för leverans och upphämtning vid ett enda tillfälle. Eftersom varorna är frysta har vi inte möjlighet att lagra tinande mat eller genomföra ett andra leveransförsök. Om du inte hämtar eller tar emot din beställning under det överenskomna tidsfönstret övergår allt ansvar till dig, vilket leder till att varorna omedelbart förverkas utan rätt till återbetalning.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Right of Withdrawal */}
+        <section className="bg-white rounded-3xl shadow-lg shadow-emerald-900/5 border border-neutral-100 p-8 md:p-10">
+          <h3 className="text-2xl font-bold text-emerald-900 mb-6 border-b border-neutral-100 pb-4">
+            3. Right of Withdrawal Exemption / Undantag från ångerrätt
           </h3>
           <div className="space-y-6">
             <div>
@@ -37,31 +145,10 @@ export default function TermsPage() {
           </div>
         </section>
 
-        {/* Section 2: Delivery & Forfeiture */}
+        {/* Section 4: Pricing & Disputes */}
         <section className="bg-white rounded-3xl shadow-lg shadow-emerald-900/5 border border-neutral-100 p-8 md:p-10">
           <h3 className="text-2xl font-bold text-emerald-900 mb-6 border-b border-neutral-100 pb-4">
-            2. Delivery Collection & Forfeiture / Leverans och förverkande
-          </h3>
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-sm font-bold tracking-widest text-emerald-600 uppercase mb-2">English</h4>
-              <p className="text-neutral-700 leading-relaxed">
-                We operate a strict one-time delivery and collection window. Customers will be notified of their specific time slot in advance and must be available to collect their order at the designated time and location. Because the items are frozen, we do not have the facilities to store melting food or attempt a second delivery. Failure to collect your order during your agreed window transfers all liability to you, resulting in immediate forfeiture of the goods without any right to a refund.
-              </p>
-            </div>
-            <div className="pl-4 border-l-4 border-neutral-200 bg-neutral-50 p-4 rounded-r-xl">
-              <h4 className="text-sm font-bold tracking-widest text-neutral-500 uppercase mb-2">Svenska</h4>
-              <p className="text-neutral-600 leading-relaxed italic">
-                Vi tillämpar ett strikt fönster för leverans och upphämtning vid ett enda tillfälle. Kunder kommer att meddelas om sin specifika tid i förväg och måste finnas tillgängliga för att hämta sin beställning vid angiven tid och plats. Eftersom varorna är frysta har vi inte möjlighet att lagra tinande mat eller genomföra ett andra leveransförsök. Om du inte hämtar din beställning under det överenskomna tidsfönstret övergår allt ansvar till dig, vilket leder till att varorna omedelbart förverkas utan rätt till återbetalning.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 3: Pricing & Disputes */}
-        <section className="bg-white rounded-3xl shadow-lg shadow-emerald-900/5 border border-neutral-100 p-8 md:p-10">
-          <h3 className="text-2xl font-bold text-emerald-900 mb-6 border-b border-neutral-100 pb-4">
-            3. Pricing & Disputes / Prissättning och tvister
+            4. Pricing & Disputes / Prissättning och tvister
           </h3>
           <div className="space-y-6">
             <div>

@@ -10,6 +10,7 @@ export default async function AdminDashboardPage() {
   // Map to plain objects to avoid passing complex Date objects to Client Components
   const orders: AdminOrder[] = rows.map(row => ({
     id: row.id,
+    public_order_id: row.public_order_id,
     customer_type: row.customer_type,
     contact_name: row.contact_name,
     email: row.email,

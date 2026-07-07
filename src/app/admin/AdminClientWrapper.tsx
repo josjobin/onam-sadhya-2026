@@ -15,7 +15,7 @@ export type AdminOrder = {
   org_number: string | null;
   vat_id: string | null;
   payment_method: string;
-  payment_status: string;
+  public_order_id: string;
 };
 
 const CITIES = ["Gothenburg", "Halmstad", "Jönköping", "Borås", "Helsingborg", "Trollhättan"];
@@ -57,7 +57,7 @@ export default function AdminClientWrapper({ orders }: { orders: AdminOrder[] })
     ];
     
     const rows = filteredOrders.map(order => [
-      order.id,
+      order.public_order_id,
       `"${order.contact_name}"`, // Quote strings to prevent comma disruption
       `"${order.email}"`,
       `"${order.phone}"`,
@@ -153,7 +153,7 @@ export default function AdminClientWrapper({ orders }: { orders: AdminOrder[] })
             <tbody className="divide-y divide-gray-200">
               {filteredOrders.map(order => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-sm font-bold text-gray-900">#{order.id}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-gray-900">#{order.public_order_id}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     <div className="font-semibold text-gray-900">{order.contact_name}</div>
                     <div className="text-xs mt-0.5">{order.email}</div>

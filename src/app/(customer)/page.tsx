@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useActionState } from "react";
+import { useState, useEffect, useActionState, useTransition } from "react";
 import Image from "next/image";
 import { submitOrder } from "@/app/actions/order";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 // Allowed cities from the types
 const CITIES = [
@@ -10,11 +11,11 @@ const CITIES = [
   "Halmstad",
   "Jönköping",
   "Borås",
-  "Helsingborg",
+  //"Helsingborg",
   "Trollhättan",
 ];
 
-const DEADLINE = new Date("2026-07-30T23:59:59").getTime();
+const DEADLINE = new Date("2026-07-20T23:59:59").getTime();
 
 export default function CustomerLandingPage() {
   const [mounted, setMounted] = useState(false);
@@ -28,7 +29,13 @@ export default function CustomerLandingPage() {
   const [isClosed, setIsClosed] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const [state, formAction, isPending] = useActionState(submitOrder, null);
+  // Next.js Actions & reCAPTCHA Hooks
+  const { executeRecaptcha } = useGoogleReCaptcha();
+  const [isTransitioning, startTransition] = useTransition();
+  const [state, formAction, isActionPending] = useActionState(submitOrder, null);
+  
+  // The form is pending if either the transition or the action itself is running
+  const isPending = isActionPending || isTransitioning;
 
   useEffect(() => {
     setMounted(true);
@@ -53,9 +60,7 @@ export default function CustomerLandingPage() {
       }
     };
 
-    // Calculate immediately on mount
     const shouldRun = calculateTimeLeft();
-
     if (!shouldRun) return;
 
     const timer = setInterval(() => {
@@ -68,16 +73,41 @@ export default function CustomerLandingPage() {
     return () => clearInterval(timer);
   }, []);
 
+  // Secure Submission Handler
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!executeRecaptcha) {
+      alert("Security verification is still loading. Please wait a moment and try again.");
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      // 1. Generate a fresh token exactly at the moment of submission
+      const token = await executeRecaptcha("checkout");
+      
+      // 2. Append the token to the form data
+      formData.append("recaptchaToken", token);
+      
+      // 3. Trigger the Next.js Server Action
+      startTransition(() => {
+        formAction(formData);
+      });
+    } catch (error) {
+      console.error("Security verification failed.", error);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-900 font-sans selection:bg-emerald-200 pb-20">
       {/* Hero Section */}
       <section className="relative w-full overflow-hidden bg-emerald-900 text-emerald-50">
-        {/* Abstract Background Elements */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-emerald-600 blur-3xl opacity-20 mix-blend-screen"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-amber-500 blur-3xl opacity-20 mix-blend-screen"></div>
         
         <div className="max-w-7xl mx-auto px-6 py-20 lg:py-28 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-          
           <div className="flex flex-col space-y-6">
             <div className="inline-flex items-center space-x-2 bg-emerald-800/50 backdrop-blur-md px-4 py-2 rounded-full w-fit border border-emerald-700/50">
               <span className={`w-2 h-2 rounded-full ${isClosed ? 'bg-red-400' : 'bg-emerald-400 animate-pulse'}`}></span>
@@ -99,7 +129,7 @@ export default function CustomerLandingPage() {
             {/* Countdown */}
             <div className="mt-8">
               <h3 className="text-sm font-semibold tracking-wider uppercase text-emerald-200 mb-3">
-                {isClosed ? "Pre-booking is now closed" : "Time Left to Pre-order (July 30, 2026)"}
+                {isClosed ? "Pre-booking is now closed" : "Time Left to Pre-order (July 20, 2026)"}
               </h3>
               <div className="flex space-x-3 sm:space-x-4">
                 {[
@@ -138,7 +168,6 @@ export default function CustomerLandingPage() {
 
       {/* Content & Form Section */}
       <section className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16 relative">
-        
         {/* Details Column */}
         <div className="lg:col-span-5 space-y-10">
           <div>
@@ -190,6 +219,12 @@ export default function CustomerLandingPage() {
                   <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
                   <span><strong className="font-extrabold text-amber-950">*Rice not included</strong> (please prepare separately).</span>
                 </li>
+                <li className="flex items-start space-x-2 pt-2 border-t border-amber-200/50 mt-2">
+                  <span className="mt-1 w-1.5 h-1.5 bg-amber-500 rounded-full shrink-0"></span>
+                  <span className="text-sm">
+                    <strong>Allergies?</strong> Please review our mandatory <a href="/nutrition" className="text-emerald-700 underline font-bold hover:text-emerald-900" target="_blank">Nutritional & Allergen Information</a> before completing your pre-order.
+                  </span>
+                </li>
               </ul>
             </div>
           </div>
@@ -223,13 +258,13 @@ export default function CustomerLandingPage() {
                   </svg>
                 </div>
                 <h3 className="text-2xl font-bold text-emerald-900">Pre-order Confirmed!</h3>
-                <p className="text-emerald-700 mt-2 font-medium text-lg">Order ID: #{state.orderId}</p>
+                <p className="text-emerald-700 mt-2 font-medium text-lg">Order ID: #{state.publicOrderId}</p>
                 <div className="mt-6 p-5 bg-white rounded-xl shadow-sm border border-emerald-100 max-w-sm mx-auto text-sm text-neutral-600 leading-relaxed">
                   <p>Thank you for your order. We will send you payment instructions (Swish / Bank Transfer) shortly to the email provided.</p>
                 </div>
                 <div className="mt-8 flex flex-col items-center space-y-4">
                   <a 
-                    href={`/payment/${state.orderId}`}
+                    href={`/payment/${state.publicOrderId}`}
                     className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-500 transition-all active:scale-95 text-center w-full max-w-xs"
                   >
                     Proceed to Payment
@@ -243,8 +278,17 @@ export default function CustomerLandingPage() {
                 </div>
               </div>
             ) : (
-              <form className="space-y-6" action={formAction}>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <input type="hidden" name="customerType" value="retail" />
+                
+                {/* HONEYPOT FIELD - Traps dumb bots */}
+                  <input 
+                    type="text" 
+                    name="bot_catch_field" 
+                    className="opacity-0 absolute -z-10 h-0 w-0" 
+                    tabIndex={-1} 
+                    autoComplete="off" 
+                  />
 
                 {state?.error && (
                   <div className="p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm font-medium animate-in fade-in">
@@ -324,7 +368,6 @@ export default function CustomerLandingPage() {
                     </span>
                   </label>
                   
-                  {/* VISUAL CUE IF T&C NOT ACCEPTED */}
                   {!termsAccepted && (
                     <div className="mt-2 flex items-center space-x-1.5 text-red-500 text-xs font-semibold px-2 animate-in fade-in">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -377,7 +420,6 @@ export default function CustomerLandingPage() {
 
               </form>
             )}
-
           </div>
         </div>
       </section>
