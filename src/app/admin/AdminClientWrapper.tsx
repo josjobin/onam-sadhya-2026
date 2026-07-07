@@ -15,6 +15,7 @@ export type AdminOrder = {
   org_number: string | null;
   vat_id: string | null;
   payment_method: string;
+  payment_status: string | null;
   public_order_id: string;
 };
 
