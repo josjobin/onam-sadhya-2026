@@ -31,8 +31,9 @@ export default function CustomerLayout({
             </div>
             
             {/* Legal Links */}
-            <div className="flex space-x-8 font-medium">
+            <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 font-medium">
               <a href="/terms" className="hover:text-white transition-colors">Terms & Conditions</a>
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="/nutrition" className="hover:text-white transition-colors">Nutrition & Allergens</a>
             </div>
 
