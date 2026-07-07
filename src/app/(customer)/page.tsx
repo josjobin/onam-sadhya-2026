@@ -26,7 +26,6 @@ export default function CustomerLandingPage() {
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   
   const [isClosed, setIsClosed] = useState(false);
-  const [customerType, setCustomerType] = useState<"retail" | "wholesale">("retail");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [state, formAction, isPending] = useActionState(submitOrder, null);
@@ -202,36 +201,6 @@ export default function CustomerLandingPage() {
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
               <h2 className="text-2xl font-bold text-emerald-950">Secure Your Order</h2>
-              
-              {/* Toggle Switch */}
-              <div className="flex bg-neutral-100 p-1.5 rounded-full relative w-max shadow-inner">
-                <button
-                  type="button"
-                  onClick={() => setCustomerType("retail")}
-                  disabled={isClosed || isPending || state?.success}
-                  className={`relative z-10 px-6 py-2 text-sm font-semibold rounded-full transition-colors ${
-                    customerType === "retail" ? "text-white" : "text-neutral-500 hover:text-neutral-900"
-                  }`}
-                >
-                  Retail
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCustomerType("wholesale")}
-                  disabled={isClosed || isPending || state?.success}
-                  className={`relative z-10 px-6 py-2 text-sm font-semibold rounded-full transition-colors ${
-                    customerType === "wholesale" ? "text-white" : "text-neutral-500 hover:text-neutral-900"
-                  }`}
-                >
-                  Wholesale
-                </button>
-                {/* Active Indicator */}
-                <div 
-                  className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-emerald-600 rounded-full transition-transform duration-300 ease-out shadow-md ${
-                    customerType === "wholesale" ? "translate-x-full left-1.5" : "translate-x-0 left-1.5"
-                  }`}
-                />
-              </div>
             </div>
 
             {isClosed ? (
@@ -275,7 +244,7 @@ export default function CustomerLandingPage() {
               </div>
             ) : (
               <form className="space-y-6" action={formAction}>
-                <input type="hidden" name="customerType" value={customerType} />
+                <input type="hidden" name="customerType" value="retail" />
 
                 {state?.error && (
                   <div className="p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm font-medium animate-in fade-in">
@@ -305,26 +274,6 @@ export default function CustomerLandingPage() {
                   </div>
                 </div>
 
-                {customerType === "wholesale" && (
-                  <div className="p-6 bg-emerald-50/50 rounded-2xl border border-emerald-100 space-y-6">
-                    <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-widest">Company Details</h4>
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-neutral-700">Company Name</label>
-                      <input type="text" name="companyName" className="w-full px-4 py-3 rounded-xl border border-emerald-200/60 bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" placeholder="Nordic Traders AB" required={customerType === "wholesale"} disabled={isPending} />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-neutral-700">Org Number</label>
-                        <input type="text" name="orgNumber" className="w-full px-4 py-3 rounded-xl border border-emerald-200/60 bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" placeholder="556000-0000" required={customerType === "wholesale"} disabled={isPending} />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-neutral-700">VAT ID</label>
-                        <input type="text" name="vatId" className="w-full px-4 py-3 rounded-xl border border-emerald-200/60 bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" placeholder="SE556000000001" required={customerType === "wholesale"} disabled={isPending} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-neutral-700">Pickup City</label>
@@ -345,21 +294,21 @@ export default function CustomerLandingPage() {
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-neutral-700 flex justify-between">
                       <span>Quantity (Boxes)</span>
-                      <span className="text-neutral-400 font-normal">Min: {customerType === "wholesale" ? 10 : 1}</span>
+                      <span className="text-neutral-400 font-normal">Min: 1</span>
                     </label>
                     <input 
                       type="number" 
                       name="quantity"
-                      min={customerType === "wholesale" ? 10 : 1} 
+                      min={1} 
                       className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" 
-                      defaultValue={customerType === "wholesale" ? 10 : 1}
+                      defaultValue={1}
                       required 
                       disabled={isPending}
                     />
                   </div>
                 </div>
 
-                {/* T&C CHECKBOX - NOW OUTSIDE WHOLESALE BLOCK */}
+                {/* T&C CHECKBOX */}
                 <div className="mt-6">
                   <label className={`flex items-start space-x-3 p-4 rounded-xl border transition-colors cursor-pointer ${termsAccepted ? 'border-emerald-200 bg-emerald-50/30' : 'border-neutral-200 bg-neutral-50/30 hover:bg-neutral-50'}`}>
                     <input
