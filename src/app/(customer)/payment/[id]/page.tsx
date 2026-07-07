@@ -34,7 +34,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
         <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 mb-8 w-full">
           <p className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2">Total Amount</p>
           <p className="text-5xl font-extrabold text-emerald-950 tabular-nums">{totalAmount} <span className="text-2xl font-bold text-emerald-700">SEK</span></p>
-          <p className="text-sm font-medium text-emerald-600 mt-2">for {order.quantity} pre-booked box(es)</p>
+          <p className="text-sm font-medium text-emerald-600 mt-2">for {order.quantity} pre-booked box(es) of 5.35 kg without rice</p>
         </div>
 
         <div className="p-4 bg-white border-2 border-neutral-100 rounded-2xl shadow-sm mb-6 inline-block">
