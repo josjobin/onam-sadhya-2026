@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const UNIT_PRICE_SEK = 3; // Ensure this matches your actual price
+    const UNIT_PRICE_SEK = 470; // Ensure this matches your actual price
     const quantity = 1; // Replace with your DB fetch logic if customers order more than 1 box
     
     const session = await stripe.checkout.sessions.create({

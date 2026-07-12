@@ -306,7 +306,7 @@ export default function CustomerLandingPage() {
                           Update '1234567890' to your actual company Swish number.
                         */}
                         <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(`https://app.swish.nu/1/p/sw/?sw=1234285045&amt=1&msg=${state.publicOrderId}`)}`}
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(`https://app.swish.nu/1/p/sw/?sw=1234285045&amt=470&msg=${state.publicOrderId}`)}`}
                           alt="Swish QR Code"
                           className="w-48 h-48"
                         />
