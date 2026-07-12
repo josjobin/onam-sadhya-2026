@@ -11,6 +11,7 @@ export async function submitOrder(prevState: any, formData: FormData) {
     const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
+    const address = formData.get("address") as string; // <-- CAPTURE ADDRESS
     const city = formData.get("city") as string;
     const quantity = parseInt(formData.get("quantity") as string, 10);
     
@@ -32,14 +33,15 @@ export async function submitOrder(prevState: any, formData: FormData) {
       }
     }
 
-    if (!firstName || !lastName || !email || !phone || !city) {
-      return { success: false, error: "Missing required contact details." };
+    // Include address validation
+    if (!firstName || !lastName || !email || !phone || !address || !city) {
+      return { success: false, error: "Missing required contact or delivery details." };
     }
 
     const contactName = `${firstName} ${lastName}`.trim();
 
     // Honeypot check
-    const honeypot = formData.get("address_line_2_optional") as string;
+    const honeypot = formData.get("bot_catch_field") as string; // Kept synchronous with your form setup
     if (honeypot && honeypot.trim() !== "") {
       return { success: false, error: "Bot submission detected." };
     }
@@ -71,16 +73,18 @@ export async function submitOrder(prevState: any, formData: FormData) {
     // Generate public order ID
     const publicOrderId = "ORD-" + crypto.randomBytes(3).toString("hex").toUpperCase();
 
+    // Updated SQL Statement to include the address field
     const [result] = await pool.execute<ResultSetHeader>(`
 INSERT INTO orders (
-  customer_type, contact_name, email, phone, city, quantity,
+  customer_type, contact_name, email, phone, address, city, quantity,
   company_name, org_number, vat_id, payment_method, payment_status, public_order_id
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         customerType,
         contactName,
         email,
         phone,
+        address, // <-- INSERT ADDRESS INTO DB
         city,
         quantity,
         companyName || null,

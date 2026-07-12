@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useActionState, useTransition } from "react";
+import { useState, useEffect, useActionState, useTransition, useRef } from "react";
 import Image from "next/image";
 import { submitOrder } from "@/app/actions/order";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import Script from "next/script";
 
 // Allowed cities from the types
 const CITIES = [
@@ -29,7 +30,25 @@ export default function CustomerLandingPage() {
   const [isClosed, setIsClosed] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [paymentView, setPaymentView] = useState<'selection' | 'swish'>('selection');
-  
+  const [quantity, setQuantity] = useState(1);
+  // NEW: Google Maps Autocomplete Logic
+  const addressRef = useRef<HTMLInputElement>(null);
+
+  const initAutocomplete = () => {
+    if (!addressRef.current || !(window as any).google) return;
+    
+    const autocomplete = new (window as any).google.maps.places.Autocomplete(addressRef.current, {
+      componentRestrictions: { country: "se" }, // Restricts suggestions strictly to Sweden
+      fields: ["formatted_address"],
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place.formatted_address && addressRef.current) {
+        addressRef.current.value = place.formatted_address;
+      }
+    });
+  };
   // Next.js Actions & reCAPTCHA Hooks
   const { executeRecaptcha } = useGoogleReCaptcha();
   const [isTransitioning, startTransition] = useTransition();
@@ -279,7 +298,7 @@ export default function CustomerLandingPage() {
 
                       {/* Stripe/Klarna Choice */}
                       <a 
-                        href={`/api/checkout?orderId=${state.publicOrderId}`}
+                        href={`/api/checkout?orderId=${state.publicOrderId}&qty=${quantity}`}
                         className="flex flex-col items-center justify-center py-6 px-4 bg-[#fcfbff] border-2 border-[#635BFF]/20 hover:border-[#635BFF] hover:bg-[#635BFF]/5 rounded-2xl transition-all group"
                       >
                         <div className="flex space-x-2 mb-3 h-10 items-center">
@@ -301,12 +320,9 @@ export default function CustomerLandingPage() {
                       <p className="text-sm text-neutral-500 mb-6">Open your Swish app and scan the QR code below.</p>
                       
                       <div className="bg-white p-4 rounded-2xl shadow-sm inline-block border border-neutral-200 mb-6">
-                        {/* 
-                          Generates a live QR Code formatted to Swish's official deep link specification.
-                          Update '1234567890' to your actual company Swish number.
-                        */}
+                        {/* Dynamically calculates total amount (quantity * 470) */}
                         <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(`https://app.swish.nu/1/p/sw/?sw=1234285045&amt=470&msg=${state.publicOrderId}`)}`}
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(`https://app.swish.nu/1/p/sw/?sw=1234285045&amt=${quantity * 470}&msg=${state.publicOrderId}`)}`}
                           alt="Swish QR Code"
                           className="w-48 h-48"
                         />
@@ -321,10 +337,12 @@ export default function CustomerLandingPage() {
                           <span className="text-neutral-500">Message:</span>
                           <span className="font-bold text-emerald-600">{state.publicOrderId}</span>
                         </div>
+                        <div className="flex justify-between border-t border-neutral-100 pt-3">
+                          <span className="text-neutral-500">Total Amount:</span>
+                          <span className="font-bold text-emerald-600">{quantity * 470} SEK</span>
+                        </div>
                       </div>
-                    </div>
-                      <div className="mt-6">
-                        <a 
+                      <a 
                           href={`/success?order=${state.publicOrderId}`}
                           className="flex flex-col items-center justify-center w-full py-3.5 bg-[#01A1E1] hover:bg-[#008bc2] text-white rounded-xl shadow-lg shadow-[#01A1E1]/30 transition-all active:scale-[0.98]"
                         >
@@ -385,6 +403,27 @@ export default function CustomerLandingPage() {
                   </div>
                 </div>
 
+                  {/* Full-width Street Address Field with Google Autocomplete */}
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-neutral-700">Street Address</label>
+                  <input 
+                    type="text" 
+                    name="address" 
+                    ref={addressRef}
+                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none" 
+                    placeholder="Start typing your address..." 
+                    required 
+                    disabled={isPending} 
+                  />
+                  
+                  {/* Google Maps Places Script Loading */}
+                  <Script 
+                    src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+                    strategy="lazyOnload"
+                    onLoad={initAutocomplete}
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-neutral-700">Pickup City</label>
@@ -412,7 +451,8 @@ export default function CustomerLandingPage() {
                       name="quantity"
                       min={1} 
                       className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" 
-                      defaultValue={1}
+                      value={quantity}
+                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                       required 
                       disabled={isPending}
                     />
@@ -463,7 +503,7 @@ export default function CustomerLandingPage() {
                   )}
                 </button>
 
-{/* Payment Methods */}
+                {/* Payment Methods */}
                 <div className="pt-8 mt-4 border-t border-neutral-100">
                   <p className="text-center text-xs font-bold text-neutral-400 mb-5 uppercase tracking-widest">
                     Secure Payment Options

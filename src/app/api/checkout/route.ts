@@ -8,14 +8,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const orderId = searchParams.get('orderId');
+  
+  // Extract the dynamic quantity passed from the frontend (default to 1 if missing)
+  const qtyParam = searchParams.get('qty');
+  const quantity = qtyParam ? parseInt(qtyParam) : 1;
 
   if (!orderId) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
   try {
-    const UNIT_PRICE_SEK = 470; // Ensure this matches your actual price
-    const quantity = 1; // Replace with your DB fetch logic if customers order more than 1 box
+    const UNIT_PRICE_SEK = 470; 
     
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'klarna'],
@@ -29,7 +32,7 @@ export async function GET(request: Request) {
             },
             unit_amount: UNIT_PRICE_SEK * 100, 
           },
-          quantity: quantity,
+          quantity: quantity, // Now uses the dynamic quantity
         },
       ],
       client_reference_id: orderId,
