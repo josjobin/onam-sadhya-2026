@@ -19,7 +19,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
   const totalAmount = order.quantity * PRICE_PER_PACK;
 
   // Swish format: C1234285045;{totalAmount};{order.public_order_id};0
-  const swishNumber = "1234285045"; // Mock swish number
+  const swishNumber = "1234285045"; // Real swish number
   const swishString = `C${swishNumber};${totalAmount};${order.public_order_id};0`;
 
   return (

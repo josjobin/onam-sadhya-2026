@@ -28,7 +28,8 @@ export default function CustomerLandingPage() {
   
   const [isClosed, setIsClosed] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-
+  const [paymentView, setPaymentView] = useState<'selection' | 'swish'>('selection');
+  
   // Next.js Actions & reCAPTCHA Hooks
   const { executeRecaptcha } = useGoogleReCaptcha();
   const [isTransitioning, startTransition] = useTransition();
@@ -251,31 +252,97 @@ export default function CustomerLandingPage() {
                 </p>
               </div>
             ) : state?.success ? (
-              <div className="text-center py-16 bg-emerald-50 rounded-2xl border border-emerald-200 animate-in zoom-in-95 duration-500">
-                <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="text-center py-12 px-4 sm:px-8 bg-white rounded-3xl shadow-xl shadow-emerald-900/5 border border-emerald-100 animate-in zoom-in-95 duration-500">
+                <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                   <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-emerald-900">Pre-order Confirmed!</h3>
-                <p className="text-emerald-700 mt-2 font-medium text-lg">Order ID: #{state.publicOrderId}</p>
-                <div className="mt-6 p-5 bg-white rounded-xl shadow-sm border border-emerald-100 max-w-sm mx-auto text-sm text-neutral-600 leading-relaxed">
-                  <p>Thank you for your order. We will send you payment instructions (Swish / Bank Transfer) shortly to the email provided.</p>
-                </div>
-                <div className="mt-8 flex flex-col items-center space-y-4">
-                  <a 
-                    href={`/payment/${state.publicOrderId}`}
-                    className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-500 transition-all active:scale-95 text-center w-full max-w-xs"
-                  >
-                    Proceed to Payment
-                  </a>
-                  <button 
-                    onClick={() => window.location.reload()}
-                    className="text-emerald-600 font-semibold hover:text-emerald-800 transition-colors text-sm"
-                  >
-                    Place another order
-                  </button>
-                </div>
+                <h3 className="text-3xl font-extrabold text-emerald-950">Order Reserved!</h3>
+                <p className="text-emerald-700 mt-2 font-semibold text-lg">Order ID: #{state.publicOrderId}</p>
+                
+                {paymentView === 'selection' ? (
+                  <div className="mt-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <p className="text-neutral-600 mb-6 font-medium text-sm sm:text-base">
+                      Please select your preferred secure payment method to complete the transaction:
+                    </p>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                      {/* Swish Choice */}
+                      <button 
+                        onClick={() => setPaymentView('swish')}
+                        className="flex flex-col items-center justify-center py-6 px-4 bg-[#f8fdfc] border-2 border-[#01A1E1]/20 hover:border-[#01A1E1] hover:bg-[#01A1E1]/5 rounded-2xl transition-all group cursor-pointer"
+                      >
+                        <Image src="/logos/swish.png" alt="Swish" width={40} height={40} className="mb-3 object-contain" />
+                        <span className="font-bold text-neutral-800 group-hover:text-[#01A1E1]">Pay with Swish</span>
+                      </button>
+
+                      {/* Stripe/Klarna Choice */}
+                      <a 
+                        href={`/api/checkout?orderId=${state.publicOrderId}`}
+                        className="flex flex-col items-center justify-center py-6 px-4 bg-[#fcfbff] border-2 border-[#635BFF]/20 hover:border-[#635BFF] hover:bg-[#635BFF]/5 rounded-2xl transition-all group"
+                      >
+                        <div className="flex space-x-2 mb-3 h-10 items-center">
+                          <Image src="/logos/klarna.png" alt="Klarna" width={50} height={20} className="object-contain" />
+                          <span className="text-neutral-300">|</span>
+                          <Image src="/logos/stripe.png" alt="Stripe" width={45} height={20} className="object-contain" />
+                        </div>
+                        <span className="font-bold text-neutral-800 group-hover:text-[#635BFF]">Card / Klarna</span>
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="bg-neutral-50 p-8 rounded-3xl border border-neutral-200 max-w-sm mx-auto relative overflow-hidden">
+                      {/* Decorative Swish background block */}
+                      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#39B54A] via-[#00AEEF] to-[#F7931E]"></div>
+                      
+                      <h4 className="font-bold text-neutral-900 text-xl mb-2">Scan to Pay</h4>
+                      <p className="text-sm text-neutral-500 mb-6">Open your Swish app and scan the QR code below.</p>
+                      
+                      <div className="bg-white p-4 rounded-2xl shadow-sm inline-block border border-neutral-200 mb-6">
+                        {/* 
+                          Generates a live QR Code formatted to Swish's official deep link specification.
+                          Update '1234567890' to your actual company Swish number.
+                        */}
+                        <img 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(`https://app.swish.nu/1/p/sw/?sw=1234285045&amt=1&msg=${state.publicOrderId}`)}`}
+                          alt="Swish QR Code"
+                          className="w-48 h-48"
+                        />
+                      </div>
+
+                      <div className="space-y-3 text-left bg-white p-4 rounded-xl border border-neutral-100 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-neutral-500">Swish Number:</span>
+                          <span className="font-bold text-neutral-900">123 428 50 45</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-neutral-500">Message:</span>
+                          <span className="font-bold text-emerald-600">{state.publicOrderId}</span>
+                        </div>
+                      </div>
+                    </div>
+                      <div className="mt-6">
+                        <a 
+                          href={`/success?order=${state.publicOrderId}`}
+                          className="flex flex-col items-center justify-center w-full py-3.5 bg-[#01A1E1] hover:bg-[#008bc2] text-white rounded-xl shadow-lg shadow-[#01A1E1]/30 transition-all active:scale-[0.98]"
+                        >
+                          <span className="font-bold text-lg">I have completed the payment</span>
+                          <span className="text-xs font-medium text-white/80 mt-0.5">Jag har slutfört betalningen</span>
+                        </a>
+                      </div>
+                    <button 
+                      onClick={() => setPaymentView('selection')}
+                      className="mt-6 text-neutral-500 font-semibold hover:text-neutral-800 transition-colors text-sm flex items-center justify-center mx-auto space-x-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      <span>Choose a different payment method</span>
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <form className="space-y-6" onSubmit={handleSubmit}>
@@ -396,28 +463,54 @@ export default function CustomerLandingPage() {
                   )}
                 </button>
 
-                {/* Payment Methods */}
-                <div className="pt-8 mt-4">
-                  <p className="text-center text-xs font-bold text-neutral-400 mb-4 uppercase tracking-widest">Secure Payment Options</p>
-                  <div className="flex justify-center items-center space-x-8 opacity-70 grayscale hover:grayscale-0 transition-all duration-300">
-                    <div className="flex items-center space-x-1.5 font-bold text-xl text-neutral-800">
-                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
-                      </svg>
-                      <span>Swish</span>
+{/* Payment Methods */}
+                <div className="pt-8 mt-4 border-t border-neutral-100">
+                  <p className="text-center text-xs font-bold text-neutral-400 mb-5 uppercase tracking-widest">
+                    Secure Payment Options
+                  </p>
+                  <div className="flex justify-center items-center space-x-6 md:space-x-8 opacity-90">
+                    
+                    {/* Swish Logo (Image + Text) */}
+                    <div className="flex items-center space-x-1.5 shrink-0">
+                      <Image 
+                        src="/logos/swish.png" 
+                        alt="Swish" 
+                        width={24} 
+                        height={24} 
+                        className="h-6 w-6 object-contain"
+                      />
+                      <span className="font-black italic tracking-tighter text-2xl text-[#01A1E1] select-none">
+                        swish
+                      </span>
                     </div>
-                    <div className="flex items-center space-x-1 font-bold text-xl text-[#635BFF]">
-                      <span>stripe</span>
+
+                    {/* Klarna Logo (Image) */}
+                    <div className="flex items-center shrink-0">
+                      <Image 
+                        src="/logos/klarna.png" 
+                        alt="Klarna" 
+                        width={75} 
+                        height={24} 
+                        className="h-6 w-auto object-contain"
+                      />
                     </div>
-                    <div className="flex items-center space-x-1.5 font-bold text-lg text-neutral-600">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
-                      <span>Bank Transfer</span>
-                    </div>
+
+                    {/* Stripe Logo (Image) */}
+                    <div className="flex items-center shrink-0">
+                      <Image 
+                        src="/logos/stripe.png" 
+                        alt="Stripe" 
+                        width={60} 
+                        height={24} 
+                        className="h-6 w-auto object-contain"
+                      />
+                    </div>                
+                    {/* Credit Card Icon */}
+                    <svg className="h-8 w-8 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
                   </div>
                 </div>
-
               </form>
             )}
           </div>
