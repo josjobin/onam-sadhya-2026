@@ -16,7 +16,7 @@ const CITIES = [
   "Trollhättan",
 ];
 
-const DEADLINE = new Date("2026-07-20T23:59:59").getTime();
+const DEADLINE = new Date("2026-07-26T23:59:59").getTime();
 
 export default function CustomerLandingPage() {
   const [mounted, setMounted] = useState(false);
@@ -149,7 +149,7 @@ export default function CustomerLandingPage() {
             {/* Countdown */}
             <div className="mt-8">
               <h3 className="text-sm font-semibold tracking-wider uppercase text-emerald-200 mb-3">
-                {isClosed ? "Pre-booking is now closed" : "Time Left to Pre-order (July 20, 2026)"}
+                {isClosed ? "Pre-booking is now closed" : "Time Left to Pre-order (July 26, 2026)"}
               </h3>
               <div className="flex space-x-3 sm:space-x-4">
                 {[
