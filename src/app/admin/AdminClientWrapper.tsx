@@ -9,6 +9,7 @@ export type AdminOrder = {
   contact_name: string;
   email: string;
   phone: string;
+  address: string;
   city: string;
   quantity: number;
   company_name: string | null;
@@ -64,7 +65,7 @@ export default function AdminClientWrapper({ orders }: { orders: AdminOrder[] })
       `"${order.phone}"`,
       `"${order.city}"`,
       order.quantity,
-      order.quantity * 850, // 850 SEK per pack
+      order.quantity * 470, // 470 SEK per pack
       order.payment_status
     ]);
     
@@ -167,7 +168,7 @@ export default function AdminClientWrapper({ orders }: { orders: AdminOrder[] })
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-600">{order.city}</td>
                   <td className="px-6 py-4 text-sm text-gray-900 text-right font-bold">{order.quantity}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 text-right font-bold">{order.quantity * 850} SEK</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 text-right font-bold">{order.quantity * 470} SEK</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest ${
                       order.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'

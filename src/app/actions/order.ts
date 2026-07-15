@@ -3,6 +3,7 @@
 import { pool } from "@/lib/db";
 import { ResultSetHeader } from "mysql2";
 import crypto from "crypto";
+import { sendOrderConfirmation } from "@/lib/mailer"; // <-- NEW: Import the mailer
 
 export async function submitOrder(prevState: any, formData: FormData) {
   try {
@@ -11,7 +12,7 @@ export async function submitOrder(prevState: any, formData: FormData) {
     const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
-    const address = formData.get("address") as string; // <-- CAPTURE ADDRESS
+    const address = formData.get("address") as string; 
     const city = formData.get("city") as string;
     const quantity = parseInt(formData.get("quantity") as string, 10);
     
@@ -33,7 +34,6 @@ export async function submitOrder(prevState: any, formData: FormData) {
       }
     }
 
-    // Include address validation
     if (!firstName || !lastName || !email || !phone || !address || !city) {
       return { success: false, error: "Missing required contact or delivery details." };
     }
@@ -41,7 +41,7 @@ export async function submitOrder(prevState: any, formData: FormData) {
     const contactName = `${firstName} ${lastName}`.trim();
 
     // Honeypot check
-    const honeypot = formData.get("bot_catch_field") as string; // Kept synchronous with your form setup
+    const honeypot = formData.get("bot_catch_field") as string; 
     if (honeypot && honeypot.trim() !== "") {
       return { success: false, error: "Bot submission detected." };
     }
@@ -73,7 +73,7 @@ export async function submitOrder(prevState: any, formData: FormData) {
     // Generate public order ID
     const publicOrderId = "ORD-" + crypto.randomBytes(3).toString("hex").toUpperCase();
 
-    // Updated SQL Statement to include the address field
+    // Insert into DB
     const [result] = await pool.execute<ResultSetHeader>(`
 INSERT INTO orders (
   customer_type, contact_name, email, phone, address, city, quantity,
@@ -84,7 +84,7 @@ INSERT INTO orders (
         contactName,
         email,
         phone,
-        address, // <-- INSERT ADDRESS INTO DB
+        address,
         city,
         quantity,
         companyName || null,
@@ -95,6 +95,12 @@ INSERT INTO orders (
         publicOrderId,
       ]
     );
+
+    // NEW: Fire the email notification in the background
+    // We do not await this, so if Siteground is slow, the user doesn't get stuck waiting
+    sendOrderConfirmation(email, publicOrderId, quantity).catch(err => {
+      console.error("Failed to send confirmation email:", err);
+    });
 
     return { success: true, publicOrderId };
   } catch (error: any) {
